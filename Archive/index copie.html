@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<!-- Version: v0.03 -->
+<!-- saved from url=(0041)file:///Users/AP/Desktop/Carto/index.html -->
+<html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Carto</title>
+  <meta name="description" content="Point de départ du projet Carto">
+  <link rel="icon" href="data:,">
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+      line-height: 1.5;
+      margin: 0;
+      padding: 2rem;
+    }
+    main { max-width: 800px; margin: 0 auto; }
+    h1 { font-size: clamp(1.8rem, 2.5vw + 1rem, 2.5rem); margin: 0 0 0.5rem; }
+    p { color: #444; }
+
+    /* Dark mode */
+    body.dark { background: #0f1115; color: #e6e6e6; }
+    body.dark p { color: #b8b8b8; }
+    body.dark .card { background: #161922; border-color: #242a36; }
+    body.dark table { border-color: #2a2f3b; }
+    body.dark th, body.dark td { border-color: #2a2f3b; }
+    body.dark .toggle { background: #11141b; border-color: #2a2f3b; color: #e6e6e6; }
+
+    /* Layout */
+    .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 1rem; margin: 1rem 0 1.5rem; }
+    .toggle { padding: 0.5rem 0.8rem; border-radius: 8px; border: 1px solid #dde2ea; background: #fff; color: #222; cursor: pointer; }
+    .controls { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+    .field { display: inline-flex; align-items: center; gap: 0.4rem; font-size: 0.95rem; }
+    .input { padding: 0.35rem 0.5rem; border-radius: 8px; border: 1px solid #dde2ea; width: 5.5rem; }
+    .container { display: grid; grid-template-columns: 1fr; gap: 1rem; }
+    @media (min-width: 900px) { .container { grid-template-columns: 1fr 1fr; } main { max-width: 1200px; } }
+    .card { border: 1px solid #e5e8ee; border-radius: 12px; padding: 1rem; background: #fff; }
+    .card h2 { margin: 0 0 0.75rem; font-size: 1.1rem; }
+
+    /* Table */
+    table { width: 100%; border-collapse: collapse; border: 1px solid #e5e8ee; }
+    th, td { border: 1px solid #e5e8ee; text-align: center; padding: 0.4rem; font-variant-numeric: tabular-nums; }
+    td { cursor: pointer; }
+    td:hover { background: rgba(0,0,0,0.03); }
+    body.dark td:hover { background: rgba(255,255,255,0.06); }
+    .selected { outline: 2px solid #007bff; }
+
+    /* 3D canvas wrapper */
+    .viz-wrap { display: grid; grid-template-rows: auto 1fr; gap: 0.75rem; }
+    .canvas-box { position: relative; height: 460px; border-radius: 12px; overflow: hidden; border: 1px solid #e5e8ee; background: linear-gradient(180deg, #f7f9fc, #eef2f8); }
+    body.dark .canvas-box { border-color: #2a2f3b; background: linear-gradient(180deg, #0f1115, #0b0d12); }
+    canvas { width: 100%; height: 100%; display: block; }
+    .elevation-slider { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); }
+    input[type="range"][orient="vertical"] { transform: rotate(-90deg); width: 200px; height: 20px; margin: 0; }
+    
+    /* Color controls */
+    .color-controls { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
+    .color-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #cfd6e4; background: #ffffff; cursor: pointer; padding: 0; }
+    body.dark .color-btn { border-color: #2a2f3b; background: #11141b; }
+    .color-label { font-size: 0.9rem; margin-right: 0.25rem; color: #555; }
+    body.dark .color-label { color: #b8b8b8; }
+    .alpha { width: 140px; }
+    .stack { display: inline-flex; align-items: center; gap: 0.4rem; }
+  </style>
+  
+</head>
+<body class="dark">
+  <main>
+    <h1>Bienvenue sur Carto</h1>
+    <div class="toolbar">
+      <p id="subtitle" style="margin:0">Cartographie 12×8 avec aperçu 3D isométrique. (v0.03)</p>
+      <div class="controls">
+        <label class="field" for="sizeX">Largeur X:</label>
+        <input id="sizeX" class="input" type="number" min="2" max="50" step="1" value="6">
+        <label class="field" for="sizeY">Hauteur Y:</label>
+        <input id="sizeY" class="input" type="number" min="2" max="50" step="1" value="6">
+        <button id="darkToggle" class="toggle" aria-pressed="true">Désactiver le mode sombre</button>
+      </div>
+    </div>
+
+    <div class="container">
+      <section class="card" aria-labelledby="tab-title">
+        <h2 id="tab-title">Tableau 12×8</h2>
+        <table id="grid"><thead><tr><th></th><th>C1</th><th>C2</th><th>C3</th><th>C4</th><th>C5</th><th>C6</th><th>C7</th><th>C8</th><th>C9</th><th>C10</th><th>C11</th><th>C12</th></tr></thead><tbody><tr><th>L1</th><td contenteditable="true" inputmode="numeric" data-r="0" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="11">0</td></tr><tr><th>L2</th><td contenteditable="true" inputmode="numeric" data-r="1" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="9" data-old-value="0">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="11">0</td></tr><tr><th>L3</th><td contenteditable="true" inputmode="numeric" data-r="2" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="11">0</td></tr><tr><th>L4</th><td contenteditable="true" inputmode="numeric" data-r="3" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="11">0</td></tr><tr><th>L5</th><td contenteditable="true" inputmode="numeric" data-r="4" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="11">0</td></tr><tr><th>L6</th><td contenteditable="true" inputmode="numeric" data-r="5" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="11">0</td></tr><tr><th>L7</th><td contenteditable="true" inputmode="numeric" data-r="6" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="11">0</td></tr><tr><th>L8</th><td contenteditable="true" inputmode="numeric" data-r="7" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="11">0</td></tr></tbody></table>
+        <div class="color-controls" style="margin-top:0.75rem">
+          <span class="color-label">Palette:</span>
+          <button id="cMinBtn" class="color-btn" title="Couleur valeur min"></button>
+          <input id="cMin" type="color" style="display:none" />
+          <button id="cMidBtn" class="color-btn" title="Couleur valeur médiane"></button>
+          <input id="cMid" type="color" style="display:none" />
+          <button id="cMaxBtn" class="color-btn" title="Couleur valeur max"></button>
+          <input id="cMax" type="color" style="display:none" />
+
+          <span class="color-label" style="margin-left:0.75rem">Alpha:</span>
+          <div class="stack">
+            <input id="alpha" class="alpha" type="range" min="0" max="1" step="0.01" value="1" />
+            <span id="alphaVal" class="color-label">1.00</span>
+          </div>
+
+          <span class="color-label" style="margin-left:0.75rem">Liaisons:</span>
+          <button id="cLineBtn" class="color-btn" title="Couleur des liaisons"></button>
+          <input id="cLine" type="color" style="display:none" />
+
+          <span class="color-label" style="margin-left:0.75rem">Points:</span>
+          <button id="cPointBtn" class="color-btn" title="Couleur des points"></button>
+          <input id="cPoint" type="color" style="display:none" />
+        </div>
+      </section>
+      <section class="card" aria-labelledby="viz-title">
+        <div class="viz-wrap">
+          <h2 id="viz-title">Visualisation 3D (isométrique)</h2>
+          <div class="canvas-box">
+            <canvas id="iso" width="1116" height="924"></canvas>
+            <div class="elevation-slider">
+              <input type="range" orient="vertical" min="0" max="2" step="0.1" value="1" id="elevationScale">
+            </div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </main>
+  <script>
+    (function() {
+      let sizeX = 6;
+      let sizeY = 6;
+      let elevationScale = 1.0;
+      let data = Array.from({ length: sizeY }, () =>
+        Array.from({ length: sizeX }, () => 0)
+      );
+
+      // Color palette management
+      const palette = {
+        min: { r: 144, g: 238, b: 144 }, // Light green
+        mid: { r: 255, g: 255, b: 0 },   // Yellow
+        max: { r: 255, g: 0, b: 0 },     // Red
+        line: { r: 128, g: 128, b: 128 }, // Gray
+        point: { r: 0, g: 0, b: 0 },     // Black
+        alpha: 1.0
+      };
+
+      function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : null;
+      }
+
+      function rgbaString(r, g, b, a) {
+        return `rgba(${r}, ${g}, ${b}, ${a})`;
+      }
+
+      function mix(a, b, t) {
+        return {
+          r: Math.round(a.r + (b.r - a.r) * t),
+          g: Math.round(a.g + (b.g - a.g) * t),
+          b: Math.round(a.b + (b.b - a.b) * t)
+        };
+      }
+
+      function gradientColor(value, minV, maxV) {
+        if (maxV === minV) return palette.min;
+        const t = Math.max(0, Math.min(1, (value - minV) / (maxV - minV)));
+        if (t < 0.5) {
+          return mix(palette.min, palette.mid, t * 2);
+        } else {
+          return mix(palette.mid, palette.max, (t - 0.5) * 2);
+        }
+      }
+
+      const table = document.getElementById('grid');
+      function renderTable() {
+        const head = '<thead>' +
+          '<tr>' + '<th></th>' + Array.from({length: sizeX}, (_, i) => `<th>C${i+1}</th>`).join('') + '</tr>' +
+        '</thead>';
+        const body = '<tbody>' +
+          data.map((row, r) => (
+            '<tr>' + `<th>L${r+1}</th>` + row.map((v, c) => `<td contenteditable="true" inputmode="numeric" data-r="${r}" data-c="${c}">${v}</td>`).join('') + '</tr>'
+          )).join('') +
+        '</tbody>';
+        table.innerHTML = head + body;
+      }
+
+      // Simple isometric renderer on Canvas
+      const canvas = document.getElementById('iso');
+      const ctx = canvas.getContext('2d');
+      function resizeCanvas() {
+        const dpr = window.devicePixelRatio || 1;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        canvas.width = Math.max(1, rect.width * dpr);
+        canvas.height = Math.max(1, rect.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0); // scale drawing by DPR
+      }
+
+      function lerp(a, b, t) { return a + (b - a) * t; }
+      function colorFor(value, maxV, dark) {
+        const minV = Math.min(...data.flat());
+        const color = gradientColor(value, minV, maxV);
+        return rgbaString(color.r, color.g, color.b, palette.alpha);
+      }
+
+      function colorFor3D(value, maxV, dark) {
+        const minV = Math.min(...data.flat());
+        const color = gradientColor(value, minV, maxV);
+        // Surfaces 3D utilisent la transparence; lignes et points restent opaques
+        return rgbaString(color.r, color.g, color.b, palette.alpha);
+      }
+
+      // Camera state
+      let zoom = 1.0;
+      let rotation = 0; // radians
+      let originX = null; // CSS px, canvas space (after DPR scaling)
+      let originY = null;
+
+      function drawIso() {
+        resizeCanvas();
+        const dark = document.body.classList.contains('dark');
+        // background
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.save();
+        ctx.fillStyle = dark ? '#0b0d12' : '#eef2f8';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+
+        const cols = sizeX, rows = sizeY;
+        const maxV = Math.max(1, ...data.flat());
+        const base = Math.min(canvas.width, canvas.height) / 8;
+        const tile = base * zoom; // zoomed tile size
+        const hScale = tile * 0.35 * elevationScale; // height per unit value
+        if (originX === null || originY === null) {
+          originX = (canvas.width / (window.devicePixelRatio || 1)) / 2;
+          originY = (canvas.height / (window.devicePixelRatio || 1)) / 2 - tile * 0.5;
+        }
+
+        // Convert grid to isometric position
+        function isoPoint(r, c, z) {
+          // center grid around (0,0) before rotation
+          const cx = c - (cols - 1) / 2;
+          const cy = r - (rows - 1) / 2;
+          // rotate in ground plane
+          const xr = cx * Math.cos(rotation) - cy * Math.sin(rotation);
+          const yr = cx * Math.sin(rotation) + cy * Math.cos(rotation);
+          const x = (xr - yr) * (tile / 2);
+          const y = (xr + yr) * (tile / 4) - z * hScale;
+          return [originX + x, originY + y];
+        }
+
+        // Build point grid
+        const points = Array.from({ length: rows }, () => Array(cols));
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const v = data[r][c];
+            points[r][c] = { p: isoPoint(r, c, v), v };
+          }
+        }
+
+        // Build filled surface (triangles) between points
+        const tris = [];
+        for (let r = 0; r < rows - 1; r++) {
+          for (let c = 0; c < cols - 1; c++) {
+            const a = points[r][c];
+            const b = points[r][c + 1];
+            const d = points[r + 1][c];
+            const e = points[r + 1][c + 1];
+            const tri1 = { pts: [a.p, b.p, e.p], v: (a.v + b.v + e.v) / 3, y: (a.p[1] + b.p[1] + e.p[1]) / 3 };
+            const tri2 = { pts: [a.p, e.p, d.p], v: (a.v + e.v + d.v) / 3, y: (a.p[1] + e.p[1] + d.p[1]) / 3 };
+            tris.push(tri1, tri2);
+          }
+        }
+        tris.sort((t1, t2) => t1.y - t2.y);
+
+        for (const t of tris) {
+          ctx.beginPath();
+          ctx.moveTo(t.pts[0][0], t.pts[0][1]);
+          ctx.lineTo(t.pts[1][0], t.pts[1][1]);
+          ctx.lineTo(t.pts[2][0], t.pts[2][1]);
+          ctx.closePath();
+          const fillCol = colorFor3D(t.v, maxV, document.body.classList.contains('dark'));
+          ctx.fillStyle = fillCol;
+          ctx.globalAlpha = 0.9;
+          ctx.fill();
+          ctx.globalAlpha = 1.0;
+        }
+
+        // Draw wireframe mesh (lines between neighbors)
+        ctx.lineWidth = 1.2;
+        ctx.strokeStyle = rgbaString(palette.line.r, palette.line.g, palette.line.b, 1.0);
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const { p: [x, y] } = points[r][c];
+            if (c + 1 < cols) {
+              const { p: [x2, y2] } = points[r][c + 1];
+              ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x2, y2); ctx.stroke();
+            }
+            if (r + 1 < rows) {
+              const { p: [x3, y3] } = points[r + 1][c];
+              ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x3, y3); ctx.stroke();
+            }
+          }
+        }
+
+        // Draw points
+        for (let r = 0; r < rows; r++) {
+          for (let c = 0; c < cols; c++) {
+            const { p: [x, y], v } = points[r][c];
+            const col = colorFor3D(v, maxV, dark);
+            ctx.fillStyle = col;
+            ctx.beginPath(); ctx.arc(x, y, Math.max(1.5, tile * 0.04), 0, Math.PI * 2); ctx.fill();
+          }
+        }
+      }
+
+      // Color controls initialization and event handlers
+      function initColorControls() {
+        // Set default colors
+        document.getElementById('cMin').value = '#90EE90';
+        document.getElementById('cMid').value = '#FFFF00';
+        document.getElementById('cMax').value = '#FF0000';
+        document.getElementById('cLine').value = '#808080';
+        document.getElementById('cPoint').value = '#000000';
+        
+        // Update button backgrounds
+        updateColorButtons();
+        
+        // Color picker event handlers
+        document.getElementById('cMin').addEventListener('change', (e) => {
+          const rgb = hexToRgb(e.target.value);
+          if (rgb) {
+            palette.min = rgb;
+            updateColorButtons();
+            colorizeTable();
+            drawIso();
+          }
+        });
+        
+        document.getElementById('cMid').addEventListener('change', (e) => {
+          const rgb = hexToRgb(e.target.value);
+          if (rgb) {
+            palette.mid = rgb;
+            updateColorButtons();
+            colorizeTable();
+            drawIso();
+          }
+        });
+        
+        document.getElementById('cMax').addEventListener('change', (e) => {
+          const rgb = hexToRgb(e.target.value);
+          if (rgb) {
+            palette.max = rgb;
+            updateColorButtons();
+            colorizeTable();
+            drawIso();
+          }
+        });
+        
+        document.getElementById('cLine').addEventListener('change', (e) => {
+          const rgb = hexToRgb(e.target.value);
+          if (rgb) {
+            palette.line = rgb;
+            updateColorButtons();
+            drawIso();
+          }
+        });
+        
+        document.getElementById('cPoint').addEventListener('change', (e) => {
+          const rgb = hexToRgb(e.target.value);
+          if (rgb) {
+            palette.point = rgb;
+            updateColorButtons();
+            drawIso();
+          }
+        });
+        
+        // Alpha slider
+        document.getElementById('alpha').addEventListener('input', (e) => {
+          palette.alpha = parseFloat(e.target.value);
+          document.getElementById('alphaVal').textContent = palette.alpha.toFixed(2);
+          colorizeTable();
+          drawIso(); // appliquer aussi à la vue 3D (surfaces seulement)
+        });
+        
+        // Button click handlers
+        document.getElementById('cMinBtn').addEventListener('click', () => {
+          document.getElementById('cMin').click();
+        });
+        
+        document.getElementById('cMidBtn').addEventListener('click', () => {
+          document.getElementById('cMid').click();
+        });
+        
+        document.getElementById('cMaxBtn').addEventListener('click', () => {
+          document.getElementById('cMax').click();
+        });
+        
+        document.getElementById('cLineBtn').addEventListener('click', () => {
+          document.getElementById('cLine').click();
+        });
+        
+        document.getElementById('cPointBtn').addEventListener('click', () => {
+          document.getElementById('cPoint').click();
+        });
+      }
+      
+      function updateColorButtons() {
+        document.getElementById('cMinBtn').style.backgroundColor = `rgb(${palette.min.r}, ${palette.min.g}, ${palette.min.b})`;
+        document.getElementById('cMidBtn').style.backgroundColor = `rgb(${palette.mid.r}, ${palette.mid.g}, ${palette.mid.b})`;
+        document.getElementById('cMaxBtn').style.backgroundColor = `rgb(${palette.max.r}, ${palette.max.g}, ${palette.max.b})`;
+        document.getElementById('cLineBtn').style.backgroundColor = `rgb(${palette.line.r}, ${palette.line.g}, ${palette.line.b})`;
+        document.getElementById('cPointBtn').style.backgroundColor = `rgb(${palette.point.r}, ${palette.point.g}, ${palette.point.b})`;
+      }
+      
+      function colorizeTable() {
+        const cells = table.querySelectorAll('td[contenteditable]');
+        const values = Array.from(cells).map(cell => Number(cell.textContent));
+        const minV = Math.min(...values);
+        const maxV = Math.max(...values);
+        
+        cells.forEach(cell => {
+          const value = Number(cell.textContent);
+          const color = gradientColor(value, minV, maxV);
+          cell.style.backgroundColor = rgbaString(color.r, color.g, color.b, palette.alpha);
+        });
+      }
+
+      // Interactions
+      renderTable();
+      initColorControls();
+      colorizeTable();
+      drawIso();
+
+      // Elevation scale slider
+      document.getElementById('elevationScale').addEventListener('input', (e) => {
+        elevationScale = parseFloat(e.target.value);
+        drawIso();
+      });
+      window.addEventListener('resize', () => {
+        // re-center only if origin was never set; otherwise preserve user-adjusted origin
+        if (originX === null || originY === null) {
+          originX = null; originY = null; // force init in next draw
+        }
+        drawIso();
+      });
+
+      // Editable cells: commit on Enter/blur, cancel on Escape
+      table.addEventListener('focusin', (e) => {
+        const td = e.target.closest('td[contenteditable]');
+        if (!td) return; td.dataset.oldValue = td.textContent;
+      });
+      table.addEventListener('keydown', (e) => {
+        const td = e.target.closest('td[contenteditable]');
+        if (!td) return;
+        if (e.key === 'Enter') { e.preventDefault(); td.blur(); }
+        if (e.key === 'Escape') { e.preventDefault(); td.textContent = td.dataset.oldValue || ''; td.blur(); }
+      });
+      table.addEventListener('blur', (e) => {
+        const td = e.target.closest('td[contenteditable]');
+        if (!td) return;
+        const r = Number(td.getAttribute('data-r'));
+        const c = Number(td.getAttribute('data-c'));
+        const val = td.textContent.trim();
+        const num = Number(val.replace(/,/g, '.'));
+        if (!Number.isFinite(num)) { td.textContent = td.dataset.oldValue || '0'; return; }
+        const clamped = Math.max(-9999, Math.min(9999, Math.round(num)));
+        data[r][c] = clamped;
+        td.textContent = String(clamped);
+        colorizeTable();
+        drawIso();
+      }, true);
+
+      // Copy paste for single cells
+      table.addEventListener('copy', (e) => {
+        const td = e.target.closest('td[contenteditable]');
+        if (!td) return;
+        e.preventDefault();
+        navigator.clipboard.writeText(td.textContent);
+      });
+
+      table.addEventListener('paste', (e) => {
+        const td = e.target.closest('td[contenteditable]');
+        if (!td) return;
+        e.preventDefault();
+        const text = e.clipboardData.getData('text');
+        const num = Number(text.replace(/,/g, '.'));
+        if (Number.isFinite(num)) {
+          const clamped = Math.max(-9999, Math.min(9999, Math.round(num)));
+          const r = +td.dataset.r;
+          const c = +td.dataset.c;
+          data[r][c] = clamped;
+          td.textContent = String(clamped);
+          colorizeTable();
+          drawIso();
+        }
+      });
+
+      // Dark mode toggle
+      const toggleBtn = document.getElementById('darkToggle');
+      function syncToggleState() {
+        const dark = document.body.classList.contains('dark');
+        toggleBtn.setAttribute('aria-pressed', String(dark));
+        toggleBtn.textContent = dark ? 'Désactiver le mode sombre' : 'Activer le mode sombre';
+      }
+      toggleBtn.addEventListener('click', () => {
+        document.body.classList.toggle('dark');
+        syncToggleState();
+        drawIso();
+      });
+      syncToggleState();
+
+      // Size control
+      const sizeInputX = document.getElementById('sizeX');
+      const sizeInputY = document.getElementById('sizeY');
+      const subtitle = document.getElementById('subtitle');
+      const tabTitle = document.getElementById('tab-title');
+      function regenerateDataXY(nx, ny) {
+        const clampedX = Math.max(2, Math.min(50, Math.floor(nx)));
+        const clampedY = Math.max(2, Math.min(50, Math.floor(ny)));
+        sizeX = clampedX; sizeY = clampedY;
+        data = Array.from({ length: sizeY }, () =>
+          Array.from({ length: sizeX }, () => 0)
+        );
+        subtitle.textContent = `Cartographie ${sizeX}×${sizeY} avec aperçu 3D isométrique. (v0.03)`;
+        tabTitle.textContent = `Tableau ${sizeX}×${sizeY}`;
+        renderTable();
+        colorizeTable();
+        // keep origin in view on major size change
+        originX = null; originY = null;
+        drawIso();
+      }
+      sizeInputX.addEventListener('change', () => regenerateDataXY(Number(sizeInputX.value), Number(sizeInputY.value)));
+      sizeInputY.addEventListener('change', () => regenerateDataXY(Number(sizeInputX.value), Number(sizeInputY.value)));
+
+      // Zoom with wheel
+      canvas.addEventListener('wheel', (e) => {
+        e.preventDefault();
+        const rect = canvas.getBoundingClientRect();
+        const mouseX = e.clientX - rect.left;
+        const mouseY = e.clientY - rect.top;
+        const factor = Math.exp(-e.deltaY * 0.0015);
+        const newZoom = Math.max(0.4, Math.min(3.5, zoom * factor));
+        const scale = newZoom / zoom;
+        // scale around mouse pointer: adjust origin so the mouse stays anchored
+        if (originX === null || originY === null) {
+          originX = (canvas.width / (window.devicePixelRatio || 1)) / 2;
+          originY = (canvas.height / (window.devicePixelRatio || 1)) / 2;
+        }
+        originX = mouseX - scale * (mouseX - originX);
+        originY = mouseY - scale * (mouseY - originY);
+        zoom = newZoom;
+        drawIso();
+      }, { passive: false });
+
+      // Rotation with drag
+      let dragging = false;
+      let lastX = 0;
+      canvas.addEventListener('pointerdown', (e) => {
+        dragging = true; lastX = e.clientX; canvas.setPointerCapture(e.pointerId);
+      });
+      canvas.addEventListener('pointermove', (e) => {
+        if (!dragging) return;
+        const dx = e.clientX - lastX;
+        lastX = e.clientX;
+        rotation -= dx * 0.01; // invert rotation direction
+        drawIso();
+      });
+      canvas.addEventListener('pointerup', (e) => {
+        dragging = false; canvas.releasePointerCapture(e.pointerId);
+      });
+
+      // Cell selection
+      let selectedCells = new Set();
+      let isSelecting = false;
+      let startCell = null;
+
+      function selectCell(td) {
+        selectedCells.add(td);
+        td.classList.add('selected');
+      }
+
+      function deselectCell(td) {
+        selectedCells.delete(td);
+        td.classList.remove('selected');
+      }
+
+      function clearSelection() {
+        selectedCells.forEach(td => td.classList.remove('selected'));
+        selectedCells.clear();
+      }
+
+      function selectRange(start, end) {
+        clearSelection();
+        const startR = +start.dataset.r;
+        const startC = +start.dataset.c;
+        const endR = +end.dataset.r;
+        const endC = +end.dataset.c;
+        const minR = Math.min(startR, endR);
+        const maxR = Math.max(startR, endR);
+        const minC = Math.min(startC, endC);
+        const maxC = Math.max(startC, endC);
+        for (let r = minR; r <= maxR; r++) {
+          for (let c = minC; c <= maxC; c++) {
+            const td = table.querySelector(`td[data-r="${r}"][data-c="${c}"]`);
+            if (td) {
+              selectCell(td);
+            }
+          }
+        }
+      }
+
+      table.addEventListener('mousedown', (e) => {
+        const td = e.target.closest('td[contenteditable]');
+        if (!td) return;
+        clearSelection();
+        startCell = td;
+        selectCell(td);
+        isSelecting = true;
+      });
+
+      table.addEventListener('mousemove', (e) => {
+        if (!isSelecting || !startCell) return;
+        const td = e.target.closest('td[contenteditable]');
+        if (td) {
+          selectRange(startCell, td);
+        }
+      });
+
+      table.addEventListener('mouseup', () => {
+        isSelecting = false;
+        startCell = null;
+      });
+
+      document.addEventListener('mousedown', (e) => {
+        if (!table.contains(e.target)) {
+          clearSelection();
+        }
+      });
+
+      // Modify focusin to select cell
+      table.addEventListener('focusin', (e) => {
+        const td = e.target.closest('td[contenteditable]');
+        if (!td) return;
+        td.dataset.oldValue = td.textContent;
+        clearSelection();
+        selectCell(td);
+      });
+
+      // Copy paste
+      document.addEventListener('keydown', (e) => {
+        if ((e.ctrlKey || e.metaKey) && selectedCells.size > 0) {
+          if (e.key === 'c') {
+            e.preventDefault();
+            copySelected();
+          } else if (e.key === 'v') {
+            e.preventDefault();
+            pasteSelected();
+          }
+        }
+      });
+
+      function copySelected() {
+        const cells = Array.from(selectedCells);
+        const minR = Math.min(...cells.map(td => +td.dataset.r));
+        const maxR = Math.max(...cells.map(td => +td.dataset.r));
+        const minC = Math.min(...cells.map(td => +td.dataset.c));
+        const maxC = Math.max(...cells.map(td => +td.dataset.c));
+        const rows = [];
+        for (let r = minR; r <= maxR; r++) {
+          const row = [];
+          for (let c = minC; c <= maxC; c++) {
+            const td = table.querySelector(`td[data-r="${r}"][data-c="${c}"]`);
+            row.push(td ? td.textContent : '');
+          }
+          rows.push(row.join('\t'));
+        }
+        navigator.clipboard.writeText(rows.join('\n'));
+      }
+
+      function pasteSelected() {
+        navigator.clipboard.readText().then(text => {
+          const rows = text.split('\n').map(r => r.split('\t'));
+          const cells = Array.from(selectedCells).sort((a, b) => (+a.dataset.r - +b.dataset.r) || (+a.dataset.c - +b.dataset.c));
+          let idx = 0;
+          for (const row of rows) {
+            for (const val of row) {
+              if (idx < cells.length) {
+                const td = cells[idx];
+                const num = Number(val.replace(/,/g, '.'));
+                if (Number.isFinite(num)) {
+                  const clamped = Math.max(-9999, Math.min(9999, Math.round(num)));
+                  const r = +td.dataset.r;
+                  const c = +td.dataset.c;
+                  data[r][c] = clamped;
+                  td.textContent = String(clamped);
+                }
+                idx++;
+              }
+            }
+          }
+          colorizeTable();
+          drawIso();
+        });
+      }
+    })();
+  </script>
+
+
+
+
+</body></html>
