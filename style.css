@@ -38,19 +38,164 @@ td:hover { background: rgba(0,0,0,0.03); }
 body.dark td:hover { background: rgba(255,255,255,0.06); }
 .selected { outline: 2px solid #007bff; }
 
-/* 3D canvas wrapper */
-.viz-wrap { display: grid; grid-template-rows: auto 1fr; gap: 0.75rem; }
-.canvas-box { position: relative; height: 460px; border-radius: 12px; overflow: hidden; border: 1px solid #e5e8ee; background: linear-gradient(180deg, #f7f9fc, #eef2f8); }
+/* 3D canvas wrapper
+   Give the viz-wrap a fixed height so the horizontal resizer can re-split the area.
+   Remove the grid gap so the .h-resizer is the clickable area between rows.
+*/
+.viz-wrap { display: grid; /* rows: top controls, resizer, canvas */ grid-template-rows: auto 8px 1fr; gap: 0; height: 420px; }
+.canvas-box { position: relative; height: 100%; border-radius: 12px; overflow: hidden; border: 1px solid #e5e8ee; background: linear-gradient(180deg, #f7f9fc, #eef2f8); }
 body.dark .canvas-box { border-color: #2a2f3b; background: linear-gradient(180deg, #0f1115, #0b0d12); }
 canvas { width: 100%; height: 100%; display: block; }
-.elevation-slider { position: absolute; right: 0px; top: 50%; transform: translateY(-50%); }
-input[type="range"][orient="vertical"] { transform: rotate(-90deg); width: 200px; height: 20px; margin: 0; }
+
+/* Horizontal resizer between title/controls (top) and canvas (bottom) */
+.h-resizer {
+  height: 8px;
+  background: linear-gradient(90deg, rgba(0,0,0,0.04), rgba(0,0,0,0.06));
+  cursor: row-resize;
+  border-radius: 4px;
+  margin: 0;
+}
+
+/* Elevation slider: keep on top and visually flush to the right edge of the canvas */
+/* Position the slider so its thumb is visible at the right edge while remaining inside the canvas box */
+.elevation-slider { position: absolute; right: 6px; top: 50%; height: 28px; width: 38px; z-index: 100; pointer-events: auto; display: flex; align-items: center; justify-content: center; }
+/* Position and rotate the native range so its thumb sits at the right edge of the canvas */
+.elevation-slider input[type="range"][orient="vertical"] {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  transform-origin: 100% 50%;
+  /* translateX(50%) keeps the thumb near the canvas edge while staying visible */
+  transform: rotate(-90deg) translateX(50%);
+  width: 240px; /* length of the rotated slider */
+  height: 20px;
+  margin: 0;
+  background: transparent;
+  -webkit-appearance: none;
+}
+/* ensure the thumb is visible on common browsers */
+.elevation-slider input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 14px; height: 14px; border-radius: 50%; background: #007bff; border: 2px solid #fff; box-shadow: 0 0 0 2px rgba(0,0,0,0.12); }
+.elevation-slider input[type="range"]::-moz-range-thumb { width: 14px; height: 14px; border-radius: 50%; background: #007bff; border: 2px solid #fff; box-shadow: 0 0 0 2px rgba(0,0,0,0.12); }
 
 /* Color controls */
-.color-controls { display: flex; gap: 0.75rem; align-items: center; flex-wrap: wrap; }
-.color-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #cfd6e4; background: #ffffff; cursor: pointer; padding: 0; }
+/* Keep all color controls (palette, alpha, fond, police) on a single line.
+   Allow horizontal scrolling on narrow screens instead of wrapping to the next line. */
+.color-controls { display: flex; gap: 0.75rem; align-items: center; flex-wrap: nowrap; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.color-btn { width: 28px; height: 28px; border-radius: 50%; border: 1px solid #cfd6e4; background: #ffffff; cursor: pointer; padding: 0; flex: 0 0 auto; }
 body.dark .color-btn { border-color: #2a2f3b; background: #11141b; }
-.color-label { font-size: 0.9rem; margin-right: 0.25rem; color: #555; }
+.color-label { font-size: 0.9rem; margin-right: 0.25rem; color: #555; white-space: nowrap; }
 body.dark .color-label { color: #b8b8b8; }
 .alpha { width: 140px; }
 .stack { display: inline-flex; align-items: center; gap: 0.4rem; }
+
+/* Centered copy button wrapper: use flex to ensure the button is centered reliably */
+.copy-center { display: flex; justify-content: center; margin-top: 0.5rem; }
+.copy-center .toggle { display: block; margin: 0 auto; }
+
+/* Corner cell: split diagonally into two editable annotation halves */
+th.corner {
+  position: relative;
+  padding: 0; /* we'll let inner spans handle padding */
+  min-width: 3.2rem;
+  height: 2.6rem;
+  overflow: visible;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* The editable annotation elements fill the corner cell but are clipped into triangles.
+   Use explicit absolute offsets so one annotation sits visually at the top-left
+   and the other is anchored at the bottom-right regardless of line-height. */
+.corner-annot {
+  position: absolute;
+  inset: 0;
+  padding: 0;
+  margin: 0;
+  font-size: 0.85rem;
+  line-height: 1;
+  cursor: text;
+  user-select: text;
+  -webkit-user-modify: read-write;
+  outline: none;
+  box-sizing: border-box;
+  color: inherit;
+  background: transparent;
+  pointer-events: auto;
+}
+
+/* Top-right triangle (above diagonal TL→BR): place column label (C#) at top-right */
+.corner-annot.top {
+  /* triangle for diagonal from top-left -> bottom-right: top-right triangle */
+  clip-path: polygon(0 0, 100% 0, 100% 100%);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  /* horizontal: right, vertical: top */
+  justify-content: flex-end;
+  align-items: flex-start;
+  padding-top: 0.22rem;
+  padding-right: 0.35rem;
+  z-index: 2;
+  text-align: right;
+  overflow: hidden;
+}
+
+/* Bottom-left triangle (below diagonal TL→BR): place row label (L#) at bottom-left */
+.corner-annot.bottom {
+  /* complementary triangle */
+  clip-path: polygon(0 0, 0 100%, 100% 100%);
+  position: absolute;
+  inset: 0;
+  display: flex;
+  /* horizontal: left, vertical: bottom */
+  justify-content: flex-start;
+  align-items: flex-end;
+  padding-bottom: 0.22rem;
+  padding-left: 0.35rem;
+  z-index: 1;
+  text-align: left;
+  overflow: hidden;
+}
+
+/* Show caret and allow editing without visible focus outline */
+.corner-annot[contenteditable="true"]:focus {
+  box-shadow: none;
+}
+
+/* Provide a clear diagonal separator line from top-left to bottom-right */
+th.corner::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* A thin visible line exactly along the diagonal (top-left → bottom-right) */
+  background: linear-gradient(to bottom right,
+    rgba(0,0,0,0) 49.4%,
+    rgba(0,0,0,0.12) 49.9%,
+    rgba(0,0,0,0.12) 50.1%,
+    rgba(0,0,0,0) 50.6%);
+  mix-blend-mode: multiply;
+  opacity: 1;
+  border-radius: 0;
+}
+
+/* Dark mode: invert separator color for contrast */
+body.dark th.corner::after {
+  background: linear-gradient(to bottom right,
+    rgba(0,0,0,0) 49.4%,
+    rgba(255,255,255,0.14) 49.9%,
+    rgba(255,255,255,0.14) 50.1%,
+    rgba(0,0,0,0) 50.6%);
+}
+
+/* Make sure triangle areas don't inherit table hover background (keep readable) */
+th.corner .corner-annot { background-clip: padding-box; }
+
+/* Ensure small screens keep readable corner: slightly reduce size */
+@media (max-width: 420px) {
+  th.corner { min-width: 2.4rem; height: 2.2rem; }
+  .corner-annot { font-size: 0.75rem; padding: 0.15rem; }
+}

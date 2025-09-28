@@ -6,7 +6,7 @@
 (function() {
   const translations = {
     fr: {
-      title: 'Amesis Scaling Maps v1.01',
+      title: 'Amesis Scaling Maps v1.05',
       subtitle: 'Logiciel de redimensionnement de cartographie.',
       table_map1: 'Tableau',
       width: 'Largeur X:',
@@ -22,7 +22,7 @@
       dark_off: 'Mode sombre : Off'
     },
     en: {
-      title: 'Amesis Scaling Maps v1.01',
+      title: 'Amesis Scaling Maps v1.05',
       subtitle: 'Mapping resizing software.',
       table_map1: 'Table',
       width: 'Width X:',

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- Version: v1.02 -->
+<!-- Version: v1.05 -->
 <!-- saved from url=(0041)file:///Users/AP/Desktop/Carto/index.html -->
 <html lang="fr"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
   
@@ -12,7 +12,7 @@
 </head>
 <body class="dark">
   <main>
-    <h1 data-i18n="title">Amesis Scaling Maps v1.02</h1>
+    <h1 data-i18n="title">Amesis Scaling Maps v1.05</h1>
     <div class="toolbar">
       <p id="subtitle" data-i18n="subtitle" style="margin:0">Logiciel de redimensionnement de cartographie.</p>
       <div class="controls">
@@ -30,41 +30,54 @@
           <input id="sizeX" class="input" type="number" min="2" max="50" step="1" value="6">
           <label class="field" for="sizeY">Hauteur Y:</label>
           <input id="sizeY" class="input" type="number" min="2" max="50" step="1" value="6">
+          <button id="swapAxes" class="toggle" title="Inverser axes">Swap axes</button>
+          <button id="decMinus" class="toggle" title="Réduire décimales">🔢 −</button>
+          <button id="decPlus" class="toggle" title="Augmenter décimales">🔢 +</button>
+          <button id="decSepToggle" class="toggle" title="Basculer séparateur décimal">🔁 .</button>
         </div>
         <table id="grid"><thead><tr><th></th><th>C1</th><th>C2</th><th>C3</th><th>C4</th><th>C5</th><th>C6</th><th>C7</th><th>C8</th><th>C9</th><th>C10</th><th>C11</th><th>C12</th></tr></thead><tbody><tr><th>L1</th><td contenteditable="true" inputmode="numeric" data-r="0" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="0" data-c="11">0</td></tr><tr><th>L2</th><td contenteditable="true" inputmode="numeric" data-r="1" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="9" data-old-value="0">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="1" data-c="11">0</td></tr><tr><th>L3</th><td contenteditable="true" inputmode="numeric" data-r="2" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="2" data-c="11">0</td></tr><tr><th>L4</th><td contenteditable="true" inputmode="numeric" data-r="3" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="3" data-c="11">0</td></tr><tr><th>L5</th><td contenteditable="true" inputmode="numeric" data-r="4" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="4" data-c="11">0</td></tr><tr><th>L6</th><td contenteditable="true" inputmode="numeric" data-r="5" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="5" data-c="11">0</td></tr><tr><th>L7</th><td contenteditable="true" inputmode="numeric" data-r="6" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="6" data-c="11">0</td></tr><tr><th>L8</th><td contenteditable="true" inputmode="numeric" data-r="7" data-c="0">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="1">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="2">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="3">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="4">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="5">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="6">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="7">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="8">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="9">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="10">0</td><td contenteditable="true" inputmode="numeric" data-r="7" data-c="11">0</td></tr></tbody></table>
         <div class="color-controls" style="margin-top:0.75rem">
           <span class="color-label">Palette:</span>
           <button id="cMinBtn" class="color-btn" title="Couleur valeur min"></button>
           <input id="cMin" type="color" style="display:none" />
+          <button id="cBetweenMinBtn" class="color-btn" title="Couleur entre min et médian"></button>
+          <input id="cBetweenMin" type="color" style="display:none" />
           <button id="cMidBtn" class="color-btn" title="Couleur valeur médiane"></button>
           <input id="cMid" type="color" style="display:none" />
+          <button id="cBetweenMaxBtn" class="color-btn" title="Couleur entre médian et max"></button>
+          <input id="cBetweenMax" type="color" style="display:none" />
           <button id="cMaxBtn" class="color-btn" title="Couleur valeur max"></button>
           <input id="cMax" type="color" style="display:none" />
   
           <span class="color-label" style="margin-left:0.75rem">Alpha:</span>
           <div class="stack">
             <input id="alpha" class="alpha" type="range" min="0" max="1" step="0.01" value="1" />
-            <span id="alphaVal" class="color-label">1.00</span>
           </div>
   
           <span class="color-label" style="margin-left:0.75rem">Liaisons:</span>
           <button id="cLineBtn" class="color-btn" title="Couleur des liaisons"></button>
           <input id="cLine" type="color" style="display:none" />
   
-          <span class="color-label" style="margin-left:0.75rem">Points:</span>
-          <button id="cPointBtn" class="color-btn" title="Couleur des points"></button>
+          <span class="color-label" style="margin-left:0.75rem">Fond:</span>
+          <button id="cPointBtn" class="color-btn" title="Couleur de l'arrière-plan 3D"></button>
           <input id="cPoint" type="color" style="display:none" />
+ 
+          <span class="color-label" style="margin-left:0.75rem">Police:</span>
+          <button id="cFontBtn" class="color-btn" title="Couleur de la police du tableur"></button>
+          <input id="cFont" type="color" style="display:none" />
+        </div>
 
-          <!-- Copier Map1 -> Map2 (placé sous les boutons de couleur de Map1) -->
-          <button id="copyMapBtn" class="toggle" style="margin-left:0.5rem">Copier Map1 → Map2</button>
+        <div class="copy-center" style="width:100%; text-align:center; margin-top:0.5rem">
+          <button id="copyMapBtn" class="toggle">Copier Map1 → Map2</button>
         </div>
       </section>
       <div class="resizer"></div>
       <section class="card" aria-labelledby="viz-title">
         <div class="viz-wrap">
           <h2 id="viz-title">Visualisation 3D (isométrique)</h2>
+          <div class="h-resizer" title="Redimensionner la zone haut/bas"></div>
           <div class="canvas-box">
-            <canvas id="iso" width="1116" height="924"></canvas>
+            <canvas id="iso" width="1116" height="924" style="background:#ffffff;"></canvas>
             <div class="elevation-slider">
               <input type="range" orient="vertical" min="0" max="2" step="0.02" value="1" id="elevationScale">
             </div>
@@ -82,38 +95,50 @@
           <input id="sizeX2" class="input" type="number" min="2" max="50" step="1" value="6">
           <label class="field" for="sizeY2">Hauteur Y:</label>
           <input id="sizeY2" class="input" type="number" min="2" max="50" step="1" value="6">
+          <button id="swapAxes2" class="toggle" title="Inverser axes">Swap axes</button>
+          <button id="decMinus2" class="toggle" title="Réduire décimales">🔢 −</button>
+          <button id="decPlus2" class="toggle" title="Augmenter décimales">🔢 +</button>
+          <button id="decSepToggle2" class="toggle" title="Basculer séparateur décimal">🔁 .</button>
         </div>
         <table id="grid2"></table>
         <div class="color-controls" style="margin-top:0.75rem">
           <span class="color-label">Palette:</span>
           <button id="cMinBtn2" class="color-btn" title="Couleur valeur min"></button>
           <input id="cMin2" type="color" style="display:none" />
+          <button id="cBetweenMinBtn2" class="color-btn" title="Couleur entre min et médian"></button>
+          <input id="cBetweenMin2" type="color" style="display:none" />
           <button id="cMidBtn2" class="color-btn" title="Couleur valeur médiane"></button>
           <input id="cMid2" type="color" style="display:none" />
+          <button id="cBetweenMaxBtn2" class="color-btn" title="Couleur entre médian et max"></button>
+          <input id="cBetweenMax2" type="color" style="display:none" />
           <button id="cMaxBtn2" class="color-btn" title="Couleur valeur max"></button>
           <input id="cMax2" type="color" style="display:none" />
-
-          <span class="color-label" style="margin-left:0.75rem">Alpha:</span>
-          <div class="stack">
-            <input id="alpha2" class="alpha" type="range" min="0" max="1" step="0.01" value="1" />
-            <span id="alphaVal2" class="color-label">1.00</span>
-          </div>
-
-          <span class="color-label" style="margin-left:0.75rem">Liaisons:</span>
-          <button id="cLineBtn2" class="color-btn" title="Couleur des liaisons"></button>
-          <input id="cLine2" type="color" style="display:none" />
-
-          <span class="color-label" style="margin-left:0.75rem">Points:</span>
-          <button id="cPointBtn2" class="color-btn" title="Couleur des points"></button>
-          <input id="cPoint2" type="color" style="display:none" />
-        </div>
+  
+           <span class="color-label" style="margin-left:0.75rem">Alpha:</span>
+           <div class="stack">
+             <input id="alpha2" class="alpha" type="range" min="0" max="1" step="0.01" value="1" />
+           </div>
+  
+           <span class="color-label" style="margin-left:0.75rem">Liaisons:</span>
+           <button id="cLineBtn2" class="color-btn" title="Couleur des liaisons"></button>
+           <input id="cLine2" type="color" style="display:none" />
+  
+           <span class="color-label" style="margin-left:0.75rem">Fond:</span>
+           <button id="cPointBtn2" class="color-btn" title="Couleur de l'arrière-plan 3D"></button>
+           <input id="cPoint2" type="color" style="display:none" />
+  
+           <span class="color-label" style="margin-left:0.75rem">Police:</span>
+           <button id="cFontBtn2" class="color-btn" title="Couleur de la police du tableur"></button>
+           <input id="cFont2" type="color" style="display:none" />
+         </div>
       </section>
       <div class="resizer"></div>
       <section class="card" aria-labelledby="viz-title2">
         <div class="viz-wrap">
           <h2 id="viz-title2">Visualisation 3D (isométrique)</h2>
+          <div class="h-resizer" title="Redimensionner la zone haut/bas"></div>
           <div class="canvas-box">
-            <canvas id="iso2" width="1116" height="924"></canvas>
+            <canvas id="iso2" width="1116" height="924" style="background:#ffffff;"></canvas>
             <div class="elevation-slider">
               <input type="range" orient="vertical" min="0" max="2" step="0.02" value="1" id="elevationScale2">
             </div>
